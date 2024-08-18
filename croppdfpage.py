@@ -34,14 +34,23 @@ with open(file, "rb") as pdf1:
 
     for i in range(numpages):
         page = pdf.pages[i]
-        if i % 2 == 0:        
-            page.cropbox.lower_left = (ll_x, ll_y)
-            page.cropbox.upper_right = ((ur_x/2)-5, ur_y)
-            output.add_page(page)
-        else:
+        if i == 0: #cover is last_side_first_side
             page.cropbox.lower_left = ((ur_x/2)+5, ll_y)
             page.cropbox.upper_right = (ur_x, ur_y)
             output.add_page(page)
+        else:        
+            page.cropbox.lower_left = (ll_x, ll_y)
+            page.cropbox.upper_right = ((ur_x/2)-5, ur_y)
+            output.add_page(page)
+        #else:
+            page.cropbox.lower_left = ((ur_x/2)+5, ll_y)
+            page.cropbox.upper_right = (ur_x, ur_y)
+            output.add_page(page)
+    
+    page = pdf.pages[0] #create back cover page
+    page.cropbox.lower_left = (ll_x, ll_y)
+    page.cropbox.upper_right = ((ur_x/2)-5, ur_y)
+    output.add_page(page)
         
     with open(newfile, "wb") as newpdf:
         output.write(newpdf)
