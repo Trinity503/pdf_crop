@@ -16,30 +16,32 @@ telegram: @anadeangelo
 """
 
 import sys
-from PyPDF2 import PdfFileWriter, PdfFileReader
+from PyPDF2 import PdfWriter, PdfReader
 
 file = str(sys.argv[1])
 newfile = str(sys.argv[2])
 
 with open(file, "rb") as pdf1:
-    pdf = PdfFileReader(pdf1)
-    output = PdfFileWriter()
-    page1 =  pdf.getPage(int(input('insert the number of the model page: ')))
-    ll = page1.trimBox.getLowerLeft()  #ll stands for lower left
-    ur = page1.trimBox.getUpperRight()  #ur stands for upper right
-
-    numpages = pdf.getNumPages()
+    pdf = PdfReader(pdf1)
+    output = PdfWriter()
+    page1 =  pdf.pages[int(input('insert the number of the model page: '))]
+    ll_x = page1.trimbox.lower_left[0]  #ll stands for lower left
+    ll_y = page1.trimbox.lower_left[1]
+    ur_x = page1.trimbox.upper_right[0] #ur stands for upper right
+    ur_y = page1.trimbox.upper_right[1]
+	
+    numpages = len(pdf.pages)
 
     for i in range(numpages):
-        page = pdf.getPage(i)
+        page = pdf.pages[i]
         if i % 2 == 0:        
-            page.cropBox.lowerLeft = ll
-            page.cropBox.upperRight = ((ur[0]/2)-5, ur[1])
-            output.addPage(page)
+            page.cropbox.lower_left = (ll_x, ll_y)
+            page.cropbox.upper_right = ((ur_x/2)-5, ur_y)
+            output.add_page(page)
         else:
-            page.cropBox.lowerLeft = ((ur[0]/2)+5, ll[1])
-            page.cropBox.upperRight = (ur[0], ur[1])
-            output.addPage(page)
+            page.cropbox.lower_left = ((ur_x/2)+5, ll_y)
+            page.cropbox.upper_right = (ur_x, ur_y)
+            output.add_page(page)
         
     with open(newfile, "wb") as newpdf:
         output.write(newpdf)
